@@ -54,6 +54,16 @@
       transition: background-color 0.4s ease, backdrop-filter 0.4s ease, border-color 0.4s ease;
     }
 
+    /* Desktop: nav always visible */
+    @media (min-width: 901px) {
+      nav {
+        background-color: rgba(236, 233, 227, 0.88) !important;
+        backdrop-filter: blur(8px) !important;
+        -webkit-backdrop-filter: blur(8px) !important;
+      }
+    }
+
+    /* Mobile: nav appears on scroll */
     nav.scrolled {
       background-color: rgba(236, 233, 227, 0.92);
       backdrop-filter: blur(10px);
