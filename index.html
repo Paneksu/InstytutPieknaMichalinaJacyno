@@ -785,39 +785,21 @@
       margin: 0.4rem 0;
     }
 
-    /* ─── CHERRY BLOSSOM ANIMATIONS ─── */
-    @keyframes blossomFall {
-      0%   { transform: translateY(-80px) rotate(0deg);   opacity: 0; }
-      5%   { opacity: 1; }
-      90%  { opacity: 0.9; }
-      100% { transform: translateY(105vh) rotate(var(--fall-spin)); opacity: 0; }
+    /* ─── CHERRY BLOSSOM BLOW-AWAY ─── */
+    @keyframes blossomFallWind {
+      0%   { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+      15%  { transform: translate(var(--bfw-kick-x), calc(var(--bfw-kick-y) * -1)) rotate(calc(var(--bfw-rot) * 0.15)); opacity: 1; }
+      75%  { opacity: 0.7; }
+      100% { transform: translate(var(--bfw-x), var(--bfw-y)) rotate(var(--bfw-rot)); opacity: 0; }
     }
-
-    @keyframes blossomSprout {
-      0%   { transform: scale(0) rotate(0deg);    opacity: 0; }
-      40%  { transform: scale(1.25) rotate(12deg); opacity: 1; }
-      60%  { transform: scale(0.9) rotate(-4deg);  opacity: 1; }
-      80%  { transform: scale(1.05) rotate(2deg);  opacity: 1; }
-      100% { transform: scale(1) rotate(0deg);     opacity: 1; }
-    }
-
-    @keyframes blossomFade {
-      0%   { opacity: 1; }
-      100% { opacity: 0; }
-    }
-
-    .blossom-falling {
-      position: fixed;
+    .blossom-blowing {
+      position: fixed !important;
+      z-index: 50 !important;
       pointer-events: none;
-      z-index: 11;
-      animation: blossomFall linear forwards;
-    }
-
-    .blossom-sprouting {
-      position: absolute;
-      pointer-events: none;
-      z-index: 2;
-      transform-origin: center bottom;
+      top: var(--bfw-start-y) !important;
+      left: var(--bfw-start-x) !important;
+      transform-origin: center center;
+      animation: blossomFallWind var(--bfw-dur) cubic-bezier(0.33, 0, 0.66, 1) forwards;
     }
 
     /* ─── CHERRY BLOSSOM BACKGROUND ─── */
@@ -1211,8 +1193,10 @@
         opacity:${op.toFixed(2)};
         transform:rotate(${rot}deg);
       `;
+      el.dataset.baseRot = rot.toFixed(2);
       el.innerHTML = blossomSVG(pc, cc, 0);
       bg.appendChild(el);
+      return el;
     }
 
     function initBlossoms() {
@@ -1226,61 +1210,190 @@
     // Init after fonts/images settle
     window.addEventListener('load', initBlossoms);
 
-    // ── FALLING flower (occasional, fixed layer) ──
-    function spawnFalling() {
-      const el = document.createElement('div');
-      el.className = 'blossom-falling';
-      const size  = 32 + Math.random() * 28;
-      const left  = 5 + Math.random() * 88;
-      const dur   = 6 + Math.random() * 5;
-      const spin  = (Math.random() * 540 - 270) + 'deg';
-      const pc    = COLORS[Math.floor(Math.random() * COLORS.length)];
-      const cc    = CENTER_COLORS[Math.floor(Math.random() * CENTER_COLORS.length)];
+    // ── MOUSE WIND PHYSICS ──
+    // Per-blossom state: { ox, oy, vx, vy, baseOp, rot, baseRot }
+    const blossomState = new Map();
 
-      el.style.cssText = `left:${left}%;top:0;width:${size}px;height:${size}px;
-        --fall-spin:${spin}; animation-duration:${dur}s;`;
-      el.innerHTML = blossomSVG(pc, cc, 0);
+    let mouseX = -9999, mouseY = -9999;
+    let windVX = 0, windVY = 0;
+    let prevMX = -9999, prevMY = -9999;
+    let lastMoveT = 0;
+
+    document.addEventListener('mousemove', e => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      lastMoveT = performance.now();
+    });
+
+    // Touch support — treat finger drag as wind
+    document.addEventListener('touchmove', e => {
+      const t = e.touches[0];
+      mouseX = t.clientX;
+      mouseY = t.clientY;
+      lastMoveT = performance.now();
+    }, { passive: true });
+
+    document.addEventListener('touchstart', e => {
+      const t = e.touches[0];
+      mouseX = t.clientX;
+      mouseY = t.clientY;
+      prevMX = mouseX;
+      prevMY = mouseY;
+      lastMoveT = performance.now();
+    }, { passive: true });
+
+    document.addEventListener('touchend', () => {
+      // Let wind decay naturally after finger lifts
+      lastMoveT = performance.now() - 200;
+    }, { passive: true });
+
+    function getBlossomScreenPos(el) {
+      const rect = el.getBoundingClientRect();
+      return { sx: rect.left + rect.width / 2, sy: rect.top + rect.height / 2 };
+    }
+
+    function blowAway(el) {
+      if (el.dataset.blowing === '1') return;
+      el.dataset.blowing = '1';
+      blossomState.delete(el);
+
+      // Capture current screen position before changing anything
+      const rect    = el.getBoundingClientRect();
+      const startX  = rect.left;
+      const startY  = rect.top;
+      const elW     = rect.width;
+      const elH     = rect.height;
+
+      // How far to fall: to bottom of viewport + a bit extra
+      const toBottom = window.innerHeight - startY + elH * 0.5;
+
+      // Horizontal drift: mostly in wind direction, scaled by wind speed
+      const windSpeed   = Math.hypot(windVX, windVY);
+      const driftStrength = Math.min(windSpeed * 5, 320);
+      const windAngleX  = windSpeed > 0.5 ? windVX / windSpeed : 0;
+      const driftX      = windAngleX * driftStrength + (Math.random() * 60 - 30);
+
+      // Initial upward kick (like being lifted then falling)
+      const kickX = windAngleX * 30;
+      const kickY = 20 + Math.random() * 20;
+
+      // Tumble spin — 2–4 full rotations
+      const spins   = (2 + Math.random() * 2) * (windVX >= 0 ? 1 : -1);
+      const rot     = (spins * 360).toFixed(1) + 'deg';
+
+      // Duration: 1.6–2.4s
+      const dur = (1.6 + Math.random() * 0.8).toFixed(2) + 's';
+
+      el.style.setProperty('--bfw-start-x', startX + 'px');
+      el.style.setProperty('--bfw-start-y', startY + 'px');
+      el.style.setProperty('--bfw-kick-x', kickX + 'px');
+      el.style.setProperty('--bfw-kick-y', kickY + 'px');
+      el.style.setProperty('--bfw-x', driftX.toFixed(1) + 'px');
+      el.style.setProperty('--bfw-y', toBottom.toFixed(1) + 'px');
+      el.style.setProperty('--bfw-rot', rot);
+      el.style.setProperty('--bfw-dur', dur);
+
+      // Detach from blossom-bg and re-attach to body for fixed positioning
+      el.style.width  = elW + 'px';
+      el.style.height = elH + 'px';
       document.body.appendChild(el);
-      setTimeout(() => el.remove(), (dur + 0.5) * 1000);
+      el.classList.add('blossom-blowing');
 
-      // schedule next (4–9s)
-      setTimeout(spawnFalling, 4000 + Math.random() * 5000);
-    }
-
-    // ── SPROUTING flower (occasional, scroll layer) ──
-    function spawnSprouting() {
-      const bg    = document.getElementById('blossom-bg');
-      const totalH = document.body.scrollHeight;
-      const el    = document.createElement('div');
-      el.className = 'blossom-sprouting';
-      const size  = 40 + Math.random() * 30;
-      const left  = 5 + Math.random() * 88;
-      const top   = 200 + Math.random() * (totalH - 400);
-      const pc    = COLORS[Math.floor(Math.random() * COLORS.length)];
-      const cc    = CENTER_COLORS[Math.floor(Math.random() * CENTER_COLORS.length)];
-
-      el.style.cssText = `left:${left}%;top:${top}px;width:${size}px;height:${size}px;opacity:0;`;
-      el.innerHTML = blossomSVG(pc, cc, 0);
-      bg.appendChild(el);
-
-      // sprout
-      el.style.animation = `blossomSprout 1.2s cubic-bezier(0.34,1.56,0.64,1) forwards`;
-
-      // fade out after 5-8s, then remove
-      const stay = 5000 + Math.random() * 3000;
+      const durationMs = parseFloat(dur) * 1000;
       setTimeout(() => {
-        el.style.animation = `blossomFade 1.5s ease forwards`;
-        setTimeout(() => el.remove(), 1600);
-      }, stay);
-
-      // schedule next (5–12s)
-      setTimeout(spawnSprouting, 5000 + Math.random() * 7000);
+        el.remove();
+        // Respawn a replacement in the background layer
+        setTimeout(() => {
+          const bg = document.getElementById('blossom-bg');
+          if (bg) {
+            const newEl = placeBlossom(bg, document.body.scrollHeight);
+            if (newEl) newEl.dataset.baseRot = newEl.style.transform.match(/rotate\(([^)]+)deg\)/)?.[1] || '0';
+          }
+        }, 1500 + Math.random() * 1000);
+      }, durationMs + 100);
     }
 
-    // Start both with initial random delay
+    function windLoop() {
+      const now = performance.now();
+      const bg  = document.getElementById('blossom-bg');
+      if (!bg) { requestAnimationFrame(windLoop); return; }
+
+      // Compute wind velocity from mouse movement (smooth lerp)
+      const dmx = mouseX - prevMX;
+      const dmy = mouseY - prevMY;
+      prevMX = mouseX; prevMY = mouseY;
+      const windDecay = (now - lastMoveT) > 80;  // no recent movement
+      if (windDecay) {
+        windVX *= 0.88;
+        windVY *= 0.88;
+      } else {
+        windVX = windVX * 0.6 + dmx * 0.4;
+        windVY = windVY * 0.6 + dmy * 0.4;
+      }
+
+      const windSpeed = Math.hypot(windVX, windVY);
+
+      const blossoms = bg.querySelectorAll('.blossom:not([data-blowing])');
+      blossoms.forEach(el => {
+        if (!blossomState.has(el)) {
+          blossomState.set(el, { ox: 0, oy: 0, vx: 0, vy: 0 });
+        }
+        const s = blossomState.get(el);
+        const { sx, sy } = getBlossomScreenPos(el);
+        const dx = sx - mouseX;
+        const dy = sy - mouseY;
+        const dist = Math.hypot(dx, dy);
+        const radius = 260;
+
+        if (dist < radius && windSpeed > 1) {
+          const influence = (1 - dist / radius) * 0.045;
+          s.vx += windVX * influence;
+          s.vy += windVY * influence;
+
+          // Chance to blow away: higher when close + fast
+          const blowChance = (1 - dist / radius) * (windSpeed / 30) * 0.004;
+          if (Math.random() < blowChance && windSpeed > 8) {
+            blowAway(el);
+            return;
+          }
+        }
+
+        // Spring back to origin
+        s.vx += -s.ox * 0.04;
+        s.vy += -s.oy * 0.04;
+
+        // Damping
+        s.vx *= 0.82;
+        s.vy *= 0.82;
+
+        s.ox += s.vx;
+        s.oy += s.vy;
+
+        // Clamp displacement
+        const maxD = 40;
+        s.ox = Math.max(-maxD, Math.min(maxD, s.ox));
+        s.oy = Math.max(-maxD, Math.min(maxD, s.oy));
+
+        const baseRot = parseFloat(el.dataset.baseRot || '0');
+        const spinExtra = s.ox * 0.3;
+        el.style.transform = `translate(${s.ox.toFixed(2)}px, ${s.oy.toFixed(2)}px) rotate(${(baseRot + spinExtra).toFixed(2)}deg)`;
+      });
+
+      requestAnimationFrame(windLoop);
+    }
+
+    // Store base rotation for spin math
     window.addEventListener('load', () => {
-      setTimeout(spawnFalling,   1000 + Math.random() * 2000);
-      setTimeout(spawnSprouting, 2000 + Math.random() * 3000);
+      // Wait for initBlossoms to finish
+      setTimeout(() => {
+        const bg = document.getElementById('blossom-bg');
+        if (!bg) return;
+        bg.querySelectorAll('.blossom').forEach(el => {
+          const m = el.style.transform.match(/rotate\(([^)]+)deg\)/);
+          el.dataset.baseRot = m ? m[1] : '0';
+        });
+        requestAnimationFrame(windLoop);
+      }, 200);
     });
 
     const MAX = 6;
