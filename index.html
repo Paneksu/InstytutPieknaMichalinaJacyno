@@ -785,6 +785,41 @@
       margin: 0.4rem 0;
     }
 
+    /* ─── CHERRY BLOSSOM ANIMATIONS ─── */
+    @keyframes blossomFall {
+      0%   { transform: translateY(-80px) rotate(0deg);   opacity: 0; }
+      5%   { opacity: 1; }
+      90%  { opacity: 0.9; }
+      100% { transform: translateY(105vh) rotate(var(--fall-spin)); opacity: 0; }
+    }
+
+    @keyframes blossomSprout {
+      0%   { transform: scale(0) rotate(0deg);    opacity: 0; }
+      40%  { transform: scale(1.25) rotate(12deg); opacity: 1; }
+      60%  { transform: scale(0.9) rotate(-4deg);  opacity: 1; }
+      80%  { transform: scale(1.05) rotate(2deg);  opacity: 1; }
+      100% { transform: scale(1) rotate(0deg);     opacity: 1; }
+    }
+
+    @keyframes blossomFade {
+      0%   { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    .blossom-falling {
+      position: fixed;
+      pointer-events: none;
+      z-index: 11;
+      animation: blossomFall linear forwards;
+    }
+
+    .blossom-sprouting {
+      position: absolute;
+      pointer-events: none;
+      z-index: 2;
+      transform-origin: center bottom;
+    }
+
     /* ─── CHERRY BLOSSOM BACKGROUND ─── */
     #blossom-bg {
       position: absolute;
@@ -1190,6 +1225,63 @@
 
     // Init after fonts/images settle
     window.addEventListener('load', initBlossoms);
+
+    // ── FALLING flower (occasional, fixed layer) ──
+    function spawnFalling() {
+      const el = document.createElement('div');
+      el.className = 'blossom-falling';
+      const size  = 32 + Math.random() * 28;
+      const left  = 5 + Math.random() * 88;
+      const dur   = 6 + Math.random() * 5;
+      const spin  = (Math.random() * 540 - 270) + 'deg';
+      const pc    = COLORS[Math.floor(Math.random() * COLORS.length)];
+      const cc    = CENTER_COLORS[Math.floor(Math.random() * CENTER_COLORS.length)];
+
+      el.style.cssText = `left:${left}%;top:0;width:${size}px;height:${size}px;
+        --fall-spin:${spin}; animation-duration:${dur}s;`;
+      el.innerHTML = blossomSVG(pc, cc, 0);
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), (dur + 0.5) * 1000);
+
+      // schedule next (12–28s)
+      setTimeout(spawnFalling, 12000 + Math.random() * 16000);
+    }
+
+    // ── SPROUTING flower (occasional, scroll layer) ──
+    function spawnSprouting() {
+      const bg    = document.getElementById('blossom-bg');
+      const totalH = document.body.scrollHeight;
+      const el    = document.createElement('div');
+      el.className = 'blossom-sprouting';
+      const size  = 40 + Math.random() * 30;
+      const left  = 5 + Math.random() * 88;
+      const top   = 200 + Math.random() * (totalH - 400);
+      const pc    = COLORS[Math.floor(Math.random() * COLORS.length)];
+      const cc    = CENTER_COLORS[Math.floor(Math.random() * CENTER_COLORS.length)];
+
+      el.style.cssText = `left:${left}%;top:${top}px;width:${size}px;height:${size}px;opacity:0;`;
+      el.innerHTML = blossomSVG(pc, cc, 0);
+      bg.appendChild(el);
+
+      // sprout
+      el.style.animation = `blossomSprout 1.2s cubic-bezier(0.34,1.56,0.64,1) forwards`;
+
+      // fade out after 5-8s, then remove
+      const stay = 5000 + Math.random() * 3000;
+      setTimeout(() => {
+        el.style.animation = `blossomFade 1.5s ease forwards`;
+        setTimeout(() => el.remove(), 1600);
+      }, stay);
+
+      // schedule next (15–35s)
+      setTimeout(spawnSprouting, 15000 + Math.random() * 20000);
+    }
+
+    // Start both with initial random delay
+    window.addEventListener('load', () => {
+      setTimeout(spawnFalling,   3000 + Math.random() * 6000);
+      setTimeout(spawnSprouting, 6000 + Math.random() * 8000);
+    });
 
     const MAX = 6;
     const filterBtns = document.querySelectorAll('.pf-btn');
