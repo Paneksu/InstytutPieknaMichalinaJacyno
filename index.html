@@ -1243,8 +1243,8 @@
       document.body.appendChild(el);
       setTimeout(() => el.remove(), (dur + 0.5) * 1000);
 
-      // schedule next (12–28s)
-      setTimeout(spawnFalling, 12000 + Math.random() * 16000);
+      // schedule next (4–9s)
+      setTimeout(spawnFalling, 4000 + Math.random() * 5000);
     }
 
     // ── SPROUTING flower (occasional, scroll layer) ──
@@ -1273,14 +1273,14 @@
         setTimeout(() => el.remove(), 1600);
       }, stay);
 
-      // schedule next (15–35s)
-      setTimeout(spawnSprouting, 15000 + Math.random() * 20000);
+      // schedule next (5–12s)
+      setTimeout(spawnSprouting, 5000 + Math.random() * 7000);
     }
 
     // Start both with initial random delay
     window.addEventListener('load', () => {
-      setTimeout(spawnFalling,   3000 + Math.random() * 6000);
-      setTimeout(spawnSprouting, 6000 + Math.random() * 8000);
+      setTimeout(spawnFalling,   1000 + Math.random() * 2000);
+      setTimeout(spawnSprouting, 2000 + Math.random() * 3000);
     });
 
     const MAX = 6;
