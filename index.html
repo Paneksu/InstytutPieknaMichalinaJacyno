@@ -1409,7 +1409,7 @@
       const bg    = document.getElementById('blossom-bg');
       bg.innerHTML = '';
       const totalH = document.body.scrollHeight;
-      const count  = Math.round(totalH / 60);         // ~1 flower per 60px of page
+      const count  = Math.round(totalH / 120);        // ~1 flower per 120px of page
       for (let i = 0; i < count; i++) placeBlossom(bg, totalH);
     }
 
