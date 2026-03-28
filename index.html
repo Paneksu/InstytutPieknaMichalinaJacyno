@@ -1218,13 +1218,19 @@
 
       </div>
 
-      <div id="portfolio-show-more" style="display:none; width:100%; justify-content:center; margin-top:2.4rem;">
+      <div id="portfolio-show-more" style="display:none; width:100%; justify-content:center; gap:1rem; margin-top:2.4rem;">
         <button id="show-more-btn" style="
           font-family:'Work Sans',sans-serif; font-size:10px; font-weight:400;
           letter-spacing:0.18em; text-transform:uppercase;
           border:1px solid var(--gold); color:var(--gold);
           background:none; padding:0.9rem 2.4rem; cursor:pointer;
           transition:background-color 0.25s ease,color 0.25s ease;">Pokaż więcej</button>
+        <button id="show-less-btn" style="display:none;
+          font-family:'Work Sans',sans-serif; font-size:10px; font-weight:400;
+          letter-spacing:0.18em; text-transform:uppercase;
+          border:1px solid var(--light-grey); color:var(--grey);
+          background:none; padding:0.9rem 2.4rem; cursor:pointer;
+          transition:background-color 0.25s ease,color 0.25s ease;">Pokaż mniej</button>
       </div>
     </div>
   </section>
@@ -1601,6 +1607,7 @@
     const portfolioItems = [...document.querySelectorAll('.portfolio-item')];
     const showMoreWrap = document.getElementById('portfolio-show-more');
     const showMoreBtn  = document.getElementById('show-more-btn');
+    const showLessBtn  = document.getElementById('show-less-btn');
 
     function applyFilter(cat, limit) {
       const matching = portfolioItems.filter(el => cat === 'all' || el.dataset.cat === cat);
@@ -1610,13 +1617,15 @@
         if (i < limit) el.classList.remove('hidden');
         else           el.classList.add('hidden');
       });
-      if (matching.length > limit) {
-        showMoreWrap.style.display = 'flex';
-        showMoreBtn.dataset.cat   = cat;
-        showMoreBtn.dataset.shown = limit;
-      } else {
-        showMoreWrap.style.display = 'none';
-      }
+      const hasMore = matching.length > limit;
+      const hasLess = limit > MAX;
+      showMoreWrap.style.display = (hasMore || hasLess) ? 'flex' : 'none';
+      showMoreBtn.style.display  = hasMore ? 'inline-flex' : 'none';
+      showLessBtn.style.display  = hasLess ? 'inline-flex' : 'none';
+      showMoreBtn.dataset.cat    = cat;
+      showMoreBtn.dataset.shown  = limit;
+      showLessBtn.dataset.cat    = cat;
+      showLessBtn.dataset.shown  = limit;
     }
 
     filterBtns.forEach(btn => {
@@ -1628,19 +1637,17 @@
     });
 
     showMoreBtn.addEventListener('click', () => {
-      const cat   = showMoreBtn.dataset.cat;
-      const shown = parseInt(showMoreBtn.dataset.shown) + MAX;
-      applyFilter(cat, shown);
+      applyFilter(showMoreBtn.dataset.cat, parseInt(showMoreBtn.dataset.shown) + MAX);
     });
 
-    showMoreBtn.addEventListener('mouseenter', () => {
-      showMoreBtn.style.backgroundColor = 'var(--gold)';
-      showMoreBtn.style.color = 'var(--white)';
+    showLessBtn.addEventListener('click', () => {
+      applyFilter(showLessBtn.dataset.cat, MAX);
     });
-    showMoreBtn.addEventListener('mouseleave', () => {
-      showMoreBtn.style.backgroundColor = 'transparent';
-      showMoreBtn.style.color = 'var(--gold)';
-    });
+
+    showMoreBtn.addEventListener('mouseenter', () => { showMoreBtn.style.backgroundColor = 'var(--gold)'; showMoreBtn.style.color = 'var(--white)'; });
+    showMoreBtn.addEventListener('mouseleave', () => { showMoreBtn.style.backgroundColor = 'transparent'; showMoreBtn.style.color = 'var(--gold)'; });
+    showLessBtn.addEventListener('mouseenter', () => { showLessBtn.style.backgroundColor = 'var(--light-grey)'; });
+    showLessBtn.addEventListener('mouseleave', () => { showLessBtn.style.backgroundColor = 'transparent'; });
 
     applyFilter('all', MAX);
 
