@@ -817,78 +817,98 @@
       margin: 0 auto 4rem;
     }
 
-    .reviews-summary {
+    /* Rating hero – animated */
+    .reviews-rating-hero {
       display: flex;
-      align-items: flex-start;
-      gap: 4rem;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.6rem;
       margin-top: 3rem;
-      padding: 2.8rem 3rem;
-      background: #f7f3ed;
-      border-top: 2px solid var(--gold);
-      box-shadow: 0 8px 40px rgba(111,90,60,0.06);
-      width: fit-content;
+      margin-bottom: 5rem;
+      text-align: center;
     }
 
-    .reviews-score {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-      min-width: 100px;
-    }
-
-    .reviews-score-num {
+    .reviews-big-score {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 4rem;
+      font-size: clamp(6rem, 12vw, 9rem);
       font-weight: 300;
-      color: var(--black);
       line-height: 1;
+      color: var(--black);
+      letter-spacing: -0.03em;
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.16,1,0.3,1);
     }
+    .reviews-big-score.rv-in { opacity: 1; transform: translateY(0); }
 
-    .reviews-stars {
+    .rv-stars-row {
       display: flex;
-      gap: 3px;
-      color: var(--gold);
-      font-size: 16px;
-    }
-
-    .reviews-count {
-      font-size: 10px;
-      font-weight: 300;
-      letter-spacing: 0.1em;
-      color: var(--grey);
-      text-transform: uppercase;
-    }
-
-    .reviews-bars {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      min-width: 260px;
-    }
-
-    .reviews-bar-row {
-      display: grid;
-      grid-template-columns: 16px 1fr 28px;
+      gap: 0.4rem;
       align-items: center;
-      gap: 0.8rem;
-      font-size: 10px;
-      font-weight: 300;
-      color: var(--grey);
     }
 
-    .reviews-bar-track {
-      height: 5px;
+    .rv-star {
+      font-size: 2rem;
+      color: var(--gold);
+      display: inline-block;
+      opacity: 0;
+      transform: translate(calc(90px + var(--si, 0) * 16px), -170px) rotate(-42deg) scale(0.2);
+    }
+
+    @keyframes rvStarShoot {
+      0% {
+        opacity: 0;
+        transform: translate(calc(90px + var(--si, 0) * 16px), -170px) rotate(-42deg) scale(0.2);
+        filter: drop-shadow(14px -22px 8px rgba(196,162,101,0.95))
+                drop-shadow(28px -44px 16px rgba(196,162,101,0.5));
+      }
+      6%  { opacity: 1; }
+      35% {
+        filter: drop-shadow(6px -10px 5px rgba(196,162,101,0.7))
+                drop-shadow(12px -20px 10px rgba(196,162,101,0.3));
+      }
+      68% {
+        transform: translate(0, 0) scale(1.45) rotate(0deg);
+        filter: drop-shadow(0 0 22px var(--gold)) drop-shadow(0 0 8px var(--gold-light));
+      }
+      80% {
+        transform: translate(0, 7px) scale(0.78) rotate(0deg);
+        filter: drop-shadow(0 0 8px rgba(196,162,101,0.5));
+      }
+      91% { transform: translate(0, -4px) scale(1.12) rotate(0deg); }
+      100% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1) rotate(0deg);
+        filter: drop-shadow(0 0 2px rgba(196,162,101,0.15));
+      }
+    }
+
+    .rv-bar-track {
+      width: min(380px, 75vw);
+      height: 2px;
       background: var(--light-grey);
-      border-radius: 3px;
+      border-radius: 2px;
       overflow: hidden;
     }
 
-    .reviews-bar-fill {
+    .rv-bar-fill {
       height: 100%;
-      background: var(--gold);
-      border-radius: 3px;
+      width: 0%;
+      background: linear-gradient(to right, var(--gold-light), var(--gold));
+      border-radius: 2px;
+      transition: width 2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
+
+    .rv-tagline {
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+    .rv-tagline.rv-in { opacity: 1; }
 
     /* Scrolling columns */
     .reviews-columns {
@@ -989,8 +1009,7 @@
     }
 
     @media (max-width: 900px) {
-      .reviews-summary { flex-direction: column; gap: 2rem; width: 100%; }
-      .reviews-bars { min-width: 100%; }
+
       .reviews-columns { gap: 1rem; max-height: 500px; }
     }
 
@@ -1346,39 +1365,17 @@
   <section class="section-reviews" id="opinie">
     <div class="reviews-top">
       <p class="section-label">Opinie klientek</p>
-      <div class="reviews-summary">
-        <div class="reviews-score">
-          <span class="reviews-score-num">5.0</span>
-          <div class="reviews-stars">★★★★★</div>
-          <span class="reviews-count">144 opinie</span>
+      <div class="reviews-rating-hero">
+        <div class="reviews-big-score" id="rv-score">5.0</div>
+        <div class="rv-stars-row">
+          <span class="rv-star" style="--si:0">★</span>
+          <span class="rv-star" style="--si:1">★</span>
+          <span class="rv-star" style="--si:2">★</span>
+          <span class="rv-star" style="--si:3">★</span>
+          <span class="rv-star" style="--si:4">★</span>
         </div>
-        <div class="reviews-bars">
-          <div class="reviews-bar-row">
-            <span>5</span>
-            <div class="reviews-bar-track"><div class="reviews-bar-fill" style="width:99.3%"></div></div>
-            <span>143</span>
-          </div>
-          <div class="reviews-bar-row">
-            <span>4</span>
-            <div class="reviews-bar-track"><div class="reviews-bar-fill" style="width:0%"></div></div>
-            <span>0</span>
-          </div>
-          <div class="reviews-bar-row">
-            <span>3</span>
-            <div class="reviews-bar-track"><div class="reviews-bar-fill" style="width:0.7%"></div></div>
-            <span>1</span>
-          </div>
-          <div class="reviews-bar-row">
-            <span>2</span>
-            <div class="reviews-bar-track"><div class="reviews-bar-fill" style="width:0%"></div></div>
-            <span>0</span>
-          </div>
-          <div class="reviews-bar-row">
-            <span>1</span>
-            <div class="reviews-bar-track"><div class="reviews-bar-fill" style="width:0%"></div></div>
-            <span>0</span>
-          </div>
-        </div>
+        <div class="rv-bar-track"><div class="rv-bar-fill" id="rv-bar"></div></div>
+        <p class="rv-tagline" id="rv-tagline">144 opinie · Booksy</p>
       </div>
     </div>
 
@@ -1941,6 +1938,42 @@
     showLessBtn.addEventListener('mouseleave', () => { showLessBtn.style.backgroundColor = 'transparent'; });
 
     applyFilter('all', MAX);
+
+    // ── REVIEWS STAR ANIMATION ──
+    (function() {
+      const section = document.querySelector('.section-reviews');
+      if (!section) return;
+      const scoreEl = document.getElementById('rv-score');
+      const stars   = document.querySelectorAll('.rv-star');
+      const bar     = document.getElementById('rv-bar');
+      const tagline = document.getElementById('rv-tagline');
+      let fired = false;
+
+      const obs = new IntersectionObserver((entries) => {
+        if (!entries[0].isIntersecting || fired) return;
+        fired = true;
+        obs.disconnect();
+
+        // 1. Score slides up
+        setTimeout(() => scoreEl.classList.add('rv-in'), 100);
+
+        // 2. Stars shoot in one by one
+        stars.forEach((star, i) => {
+          setTimeout(() => {
+            star.style.animation = 'rvStarShoot 0.88s cubic-bezier(0.22,1,0.36,1) forwards';
+          }, 550 + i * 170);
+        });
+
+        // 3. Bar + tagline after last star lands
+        const afterStars = 550 + 5 * 170 + 300;
+        setTimeout(() => {
+          bar.style.width = '99.3%';
+          setTimeout(() => tagline.classList.add('rv-in'), 400);
+        }, afterStars);
+      }, { threshold: 0.3 });
+
+      obs.observe(section);
+    })();
 
     // ── NAV SCROLL BG ──
     (function() {
