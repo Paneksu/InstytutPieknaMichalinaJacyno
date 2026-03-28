@@ -802,6 +802,203 @@
       margin: 0.4rem 0;
     }
 
+    /* ─── OPINIE ─── */
+    .section-reviews {
+      padding-top: 12vw;
+      padding-bottom: 10vw;
+      border-top: 1px solid var(--light-grey);
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+    }
+
+    .reviews-top {
+      width: 90%;
+      margin: 0 auto 4rem;
+    }
+
+    .reviews-summary {
+      display: flex;
+      align-items: flex-start;
+      gap: 4rem;
+      margin-top: 3rem;
+      padding: 2.8rem 3rem;
+      background: #f7f3ed;
+      border-top: 2px solid var(--gold);
+      box-shadow: 0 8px 40px rgba(111,90,60,0.06);
+      width: fit-content;
+    }
+
+    .reviews-score {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      min-width: 100px;
+    }
+
+    .reviews-score-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 4rem;
+      font-weight: 300;
+      color: var(--black);
+      line-height: 1;
+    }
+
+    .reviews-stars {
+      display: flex;
+      gap: 3px;
+      color: var(--gold);
+      font-size: 16px;
+    }
+
+    .reviews-count {
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      color: var(--grey);
+      text-transform: uppercase;
+    }
+
+    .reviews-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      min-width: 260px;
+    }
+
+    .reviews-bar-row {
+      display: grid;
+      grid-template-columns: 16px 1fr 28px;
+      align-items: center;
+      gap: 0.8rem;
+      font-size: 10px;
+      font-weight: 300;
+      color: var(--grey);
+    }
+
+    .reviews-bar-track {
+      height: 5px;
+      background: var(--light-grey);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .reviews-bar-fill {
+      height: 100%;
+      background: var(--gold);
+      border-radius: 3px;
+    }
+
+    /* Scrolling columns */
+    .reviews-columns {
+      width: 90%;
+      margin: 0 auto;
+      display: flex;
+      gap: 1.6rem;
+      max-height: 640px;
+      overflow: hidden;
+      -webkit-mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+      mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+    }
+
+    .reviews-col {
+      display: flex;
+      flex-direction: column;
+      gap: 1.6rem;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .reviews-col-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 1.6rem;
+      animation: reviewsScroll var(--scroll-dur, 20s) linear infinite;
+    }
+
+    @keyframes reviewsScroll {
+      from { transform: translateY(0); }
+      to   { transform: translateY(-50%); }
+    }
+
+    .review-card {
+      background: #f7f3ed;
+      border-top: 2px solid var(--gold-light);
+      padding: 2rem 2.2rem;
+      box-shadow: 0 4px 24px rgba(111,90,60,0.05);
+      flex-shrink: 0;
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+
+    .review-card:hover {
+      box-shadow: 0 12px 40px rgba(111,90,60,0.1);
+      transform: translateY(-3px);
+    }
+
+    .review-text {
+      font-size: 12px;
+      font-weight: 300;
+      line-height: 1.9;
+      color: var(--grey);
+      font-style: italic;
+    }
+
+    .review-footer {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1.6rem;
+    }
+
+    .review-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--light-grey);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--gold-dark);
+      flex-shrink: 0;
+    }
+
+    .review-name {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: var(--black);
+    }
+
+    .review-source {
+      font-size: 9px;
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-top: 1px;
+    }
+
+    .review-stars-small {
+      color: var(--gold);
+      font-size: 10px;
+      margin-top: 3px;
+    }
+
+    @media (max-width: 900px) {
+      .reviews-summary { flex-direction: column; gap: 2rem; width: 100%; }
+      .reviews-bars { min-width: 100%; }
+      .reviews-columns { gap: 1rem; max-height: 500px; }
+    }
+
+    @media (max-width: 600px) {
+      .reviews-col:nth-child(3) { display: none; }
+      .reviews-col:nth-child(2) { display: none; }
+    }
+
     /* ─── CHERRY BLOSSOM BLOW-AWAY ─── */
     @keyframes blossomFallWind {
       0%   { transform: translate(0, 0) rotate(0deg); opacity: 1; }
@@ -1140,6 +1337,99 @@
         <div class="about-image-badge">
           <span class="badge-num">★ 5.0</span>
           <span class="badge-text">144 opinii</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OPINIE -->
+  <section class="section-reviews" id="opinie">
+    <div class="reviews-top">
+      <p class="section-label">Opinie klientek</p>
+      <div class="reviews-summary">
+        <div class="reviews-score">
+          <span class="reviews-score-num">5.0</span>
+          <div class="reviews-stars">★★★★★</div>
+          <span class="reviews-count">144 opinie</span>
+        </div>
+        <div class="reviews-bars">
+          <div class="reviews-bar-row">
+            <span>5</span>
+            <div class="reviews-bar-track"><div class="reviews-bar-fill" style="width:99.3%"></div></div>
+            <span>143</span>
+          </div>
+          <div class="reviews-bar-row">
+            <span>4</span>
+            <div class="reviews-bar-track"><div class="reviews-bar-fill" style="width:0%"></div></div>
+            <span>0</span>
+          </div>
+          <div class="reviews-bar-row">
+            <span>3</span>
+            <div class="reviews-bar-track"><div class="reviews-bar-fill" style="width:0.7%"></div></div>
+            <span>1</span>
+          </div>
+          <div class="reviews-bar-row">
+            <span>2</span>
+            <div class="reviews-bar-track"><div class="reviews-bar-fill" style="width:0%"></div></div>
+            <span>0</span>
+          </div>
+          <div class="reviews-bar-row">
+            <span>1</span>
+            <div class="reviews-bar-track"><div class="reviews-bar-fill" style="width:0%"></div></div>
+            <span>0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reviews-columns">
+      <!-- Kolumna 1 -->
+      <div class="reviews-col">
+        <div class="reviews-col-inner" style="--scroll-dur:28s">
+          <!-- karty × 2 dla pętli -->
+          <div class="review-card"><p class="review-text">„Jestem zachwycona efektem laminacji brwi! Pani Michalina to prawdziwa artystka — wie jak podkreślić naturalne piękno każdej kobiety. Wrócę na pewno!"</p><div class="review-footer"><div class="review-avatar">K</div><div><div class="review-name">Karolina M.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+          <div class="review-card"><p class="review-text">„Stylizacja rzęs perfekcyjna, efekt naturalny i długotrwały. Salon jest wyjątkowo przytulny, a obsługa niezwykle profesjonalna. Polecam z całego serca!"</p><div class="review-footer"><div class="review-avatar">A</div><div><div class="review-name">Agnieszka W.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+          <div class="review-card"><p class="review-text">„Korekcja nosa kwasem hialuronowym wykonana perfekcyjnie — efekt naturalny, dokładnie taki o jaki prosiłam. Czuję się pięknie i pewnie. Bardzo dziękuję!"</p><div class="review-footer"><div class="review-avatar">P</div><div><div class="review-name">Paulina R.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+          <div class="review-card"><p class="review-text">„Uczęszczam do Instytutu od ponad roku i zawsze wychodzę zachwycona. Ogromna wiedza, dbałość o szczegóły i niesamowita pasja do pracy — to tu czuć!"</p><div class="review-footer"><div class="review-avatar">N</div><div><div class="review-name">Natalia S.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+          <div class="review-card"><p class="review-text">„Botoks na czoło wykonany bezboleśnie i z fantastycznym efektem. Pani Michalina jest bardzo profesjonalna i dba o komfort klientki na każdym kroku."</p><div class="review-footer"><div class="review-avatar">M</div><div><div class="review-name">Monika K.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+          <!-- duplikat dla pętli -->
+          <div class="review-card"><p class="review-text">„Jestem zachwycona efektem laminacji brwi! Pani Michalina to prawdziwa artystka — wie jak podkreślić naturalne piękno każdej kobiety. Wrócę na pewno!"</p><div class="review-footer"><div class="review-avatar">K</div><div><div class="review-name">Karolina M.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+          <div class="review-card"><p class="review-text">„Stylizacja rzęs perfekcyjna, efekt naturalny i długotrwały. Salon jest wyjątkowo przytulny, a obsługa niezwykle profesjonalna. Polecam z całego serca!"</p><div class="review-footer"><div class="review-avatar">A</div><div><div class="review-name">Agnieszka W.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+          <div class="review-card"><p class="review-text">„Korekcja nosa kwasem hialuronowym wykonana perfekcyjnie — efekt naturalny, dokładnie taki o jaki prosiłam. Czuję się pięknie i pewnie. Bardzo dziękuję!"</p><div class="review-footer"><div class="review-avatar">P</div><div><div class="review-name">Paulina R.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+          <div class="review-card"><p class="review-text">„Uczęszczam do Instytutu od ponad roku i zawsze wychodzę zachwycona. Ogromna wiedza, dbałość o szczegóły i niesamowita pasja do pracy — to tu czuć!"</p><div class="review-footer"><div class="review-avatar">N</div><div><div class="review-name">Natalia S.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+          <div class="review-card"><p class="review-text">„Botoks na czoło wykonany bezboleśnie i z fantastycznym efektem. Pani Michalina jest bardzo profesjonalna i dba o komfort klientki na każdym kroku."</p><div class="review-footer"><div class="review-avatar">M</div><div><div class="review-name">Monika K.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+        </div>
+      </div>
+
+      <!-- Kolumna 2 -->
+      <div class="reviews-col">
+        <div class="reviews-col-inner" style="--scroll-dur:34s">
+          <div class="review-card"><p class="review-text">„Stylizacja rzęs robi wow! Zawsze wychodzę z poczuciem, że jestem najpiękniejsza. Pani Michalina ma niezwykły talent i niesamowitą cierpliwość."</p><div class="review-footer"><div class="review-avatar">J</div><div><div class="review-name">Joanna B.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+          <div class="review-card"><p class="review-text">„Salon na bardzo wysokim poziomie. Czysto, estetycznie, a przede wszystkim profesjonalnie. Laminacja brwi i rzęs — efekty mówią same za siebie!"</p><div class="review-footer"><div class="review-avatar">E</div><div><div class="review-name">Ewelina T.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+          <div class="review-card"><p class="review-text">„Pierwszy raz zdecydowałam się na mezoterapię igłową i nie żałuję! Skóra odżywiona, napięta i promienna. Pani Michalina tłumaczy każdy krok zabiegu."</p><div class="review-footer"><div class="review-avatar">D</div><div><div class="review-name">Dominika L.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+          <div class="review-card"><p class="review-text">„Regularnie korzystam z usług tego salonu i za każdym razem jestem pod wrażeniem. Laminacja rzęs trzyma idealnie, a Pani Michalina jest zawsze uśmiechnięta!"</p><div class="review-footer"><div class="review-avatar">S</div><div><div class="review-name">Sandra O.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+          <div class="review-card"><p class="review-text">„Najlepszy instytut urody w Rybniku bez żadnych wątpliwości. Fachowość, precyzja i indywidualne podejście do każdej klientki. Wróciłam już po raz piąty!"</p><div class="review-footer"><div class="review-avatar">I</div><div><div class="review-name">Izabela C.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+          <div class="review-card"><p class="review-text">„Stylizacja rzęs robi wow! Zawsze wychodzę z poczuciem, że jestem najpiękniejsza. Pani Michalina ma niezwykły talent i niesamowitą cierpliwość."</p><div class="review-footer"><div class="review-avatar">J</div><div><div class="review-name">Joanna B.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+          <div class="review-card"><p class="review-text">„Salon na bardzo wysokim poziomie. Czysto, estetycznie, a przede wszystkim profesjonalnie. Laminacja brwi i rzęs — efekty mówią same za siebie!"</p><div class="review-footer"><div class="review-avatar">E</div><div><div class="review-name">Ewelina T.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+          <div class="review-card"><p class="review-text">„Pierwszy raz zdecydowałam się na mezoterapię igłową i nie żałuję! Skóra odżywiona, napięta i promienna. Pani Michalina tłumaczy każdy krok zabiegu."</p><div class="review-footer"><div class="review-avatar">D</div><div><div class="review-name">Dominika L.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+          <div class="review-card"><p class="review-text">„Regularnie korzystam z usług tego salonu i za każdym razem jestem pod wrażeniem. Laminacja rzęs trzyma idealnie, a Pani Michalina jest zawsze uśmiechnięta!"</p><div class="review-footer"><div class="review-avatar">S</div><div><div class="review-name">Sandra O.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+          <div class="review-card"><p class="review-text">„Najlepszy instytut urody w Rybniku bez żadnych wątpliwości. Fachowość, precyzja i indywidualne podejście do każdej klientki. Wróciłam już po raz piąty!"</p><div class="review-footer"><div class="review-avatar">I</div><div><div class="review-name">Izabela C.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+        </div>
+      </div>
+
+      <!-- Kolumna 3 -->
+      <div class="reviews-col">
+        <div class="reviews-col-inner" style="--scroll-dur:24s">
+          <div class="review-card"><p class="review-text">„Rewelacyjna laminacja rzęs — dokładnie to czego szukałam! Efekt utrzymuje się długo. Salon jest przepiękny i pachnie cudownie. Polecam każdej!"</p><div class="review-footer"><div class="review-avatar">Z</div><div><div class="review-name">Zofia H.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+          <div class="review-card"><p class="review-text">„Henna na brwi i aplikacja keratyny — efekty ponad moje oczekiwania. Pani Michalina jest ekspertem w swoim fachu. Już się nie mogę doczekać kolejnej wizyty!"</p><div class="review-footer"><div class="review-avatar">R</div><div><div class="review-name">Renata P.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+          <div class="review-card"><p class="review-text">„Kwas hialuronowy na usta — wynik naturalny, piękny i dokładnie taki jak chciałam. Pani Michalina ma niezwykłe wyczucie estetyki. Dziękuję!"</p><div class="review-footer"><div class="review-avatar">W</div><div><div class="review-name">Weronika G.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+          <div class="review-card"><p class="review-text">„Polecam każdej kobiecie! Obsługa na najwyższym poziomie, zabiegi wykonane z ogromną precyzją. W Instytucie Piękna czuję się jak w spa — kompletny relaks."</p><div class="review-footer"><div class="review-avatar">B</div><div><div class="review-name">Beata K.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+          <div class="review-card"><p class="review-text">„Botoks na zmarszczki mimiczne — efekt niesamowity! Pani Michalina jest mistrzynią w swoim fachu, a sam zabieg był bezboleśny i szybki."</p><div class="review-footer"><div class="review-avatar">L</div><div><div class="review-name">Lidia F.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+          <div class="review-card"><p class="review-text">„Rewelacyjna laminacja rzęs — dokładnie to czego szukałam! Efekt utrzymuje się długo. Salon jest przepiękny i pachnie cudownie. Polecam każdej!"</p><div class="review-footer"><div class="review-avatar">Z</div><div><div class="review-name">Zofia H.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+          <div class="review-card"><p class="review-text">„Henna na brwi i aplikacja keratyny — efekty ponad moje oczekiwania. Pani Michalina jest ekspertem w swoim fachu. Już się nie mogę doczekać kolejnej wizyty!"</p><div class="review-footer"><div class="review-avatar">R</div><div><div class="review-name">Renata P.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+          <div class="review-card"><p class="review-text">„Kwas hialuronowy na usta — wynik naturalny, piękny i dokładnie taki jak chciałam. Pani Michalina ma niezwykłe wyczucie estetyki. Dziękuję!"</p><div class="review-footer"><div class="review-avatar">W</div><div><div class="review-name">Weronika G.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+          <div class="review-card"><p class="review-text">„Polecam każdej kobiecie! Obsługa na najwyższym poziomie, zabiegi wykonane z ogromną precyzją. W Instytucie Piękna czuję się jak w spa — kompletny relaks."</p><div class="review-footer"><div class="review-avatar">B</div><div><div class="review-name">Beata K.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
+          <div class="review-card"><p class="review-text">„Botoks na zmarszczki mimiczne — efekt niesamowity! Pani Michalina jest mistrzynią w swoim fachu, a sam zabieg był bezboleśny i szybki."</p><div class="review-footer"><div class="review-avatar">L</div><div><div class="review-name">Lidia F.</div><div class="review-stars-small">★★★★★</div><div class="review-source">Booksy</div></div></div></div>
         </div>
       </div>
     </div>
