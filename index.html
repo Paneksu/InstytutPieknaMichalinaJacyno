@@ -47,11 +47,18 @@
       align-items: center;
       justify-content: space-between;
       padding: 1.6rem 5%;
-      background-color: rgba(236, 233, 227, 0.88);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background-color: transparent;
+      backdrop-filter: blur(0px);
+      -webkit-backdrop-filter: blur(0px);
       border-bottom: 1px solid transparent;
-      transition: border-color 0.3s ease;
+      transition: background-color 0.4s ease, backdrop-filter 0.4s ease, border-color 0.4s ease;
+    }
+
+    nav.scrolled {
+      background-color: rgba(236, 233, 227, 0.92);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom-color: var(--light-grey);
     }
 
     .nav-logo img {
@@ -1632,6 +1639,16 @@
     });
 
     applyFilter('all', MAX);
+
+    // ── NAV SCROLL BG ──
+    (function() {
+      const nav = document.querySelector('nav');
+      function onScroll() {
+        nav.classList.toggle('scrolled', window.scrollY > 60);
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    })();
 
     // ── HAMBURGER MENU ──
     const hamburger   = document.querySelector('.nav-hamburger');
