@@ -1642,6 +1642,7 @@
 
     showLessBtn.addEventListener('click', () => {
       applyFilter(showLessBtn.dataset.cat, MAX);
+      document.getElementById('portfolio').scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
 
     showMoreBtn.addEventListener('mouseenter', () => { showMoreBtn.style.backgroundColor = 'var(--gold)'; showMoreBtn.style.color = 'var(--white)'; });
